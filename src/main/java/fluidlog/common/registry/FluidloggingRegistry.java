@@ -11,23 +11,39 @@ import fluidlog.api.IFluidLoggable;
 
 public class FluidloggingRegistry {
 
-    private static final Map<Block, IFluidLoggable> BLOCK_HANDLERS = new HashMap<>();
+    public static final IFluidLoggable DEFAULT_LOGGABLE = new IFluidLoggable() {};
+
+    private static final Map<Class<? extends Block>, IFluidLoggable> BLOCK_HANDLERS = new HashMap<>();
 
     private FluidloggingRegistry() {}
 
-    public static void register(Block block, IFluidLoggable handler) {
-        BLOCK_HANDLERS.put(block, handler);
+    public static void register(Class<? extends Block> blockClass, IFluidLoggable handler) {
+        BLOCK_HANDLERS.put(blockClass, handler);
     }
 
     public static boolean canFluidLog(World world, int x, int y, int z, Block block, int meta, Fluid fluid) {
-        var handler = BLOCK_HANDLERS.get(block);
+        if (block == null) return false;
+        var handler = getLoggable(block);
         if (handler == null) return false;
 
         return handler.canFluidLog(world, x, y, z, block, meta, fluid);
     }
 
     public static IFluidLoggable getBlockIFluidLoggable(Block block) {
-        return BLOCK_HANDLERS.get(block);
+        return getLoggable(block);
+    }
+
+    private static IFluidLoggable getLoggable(Block block) {
+        if (block == null) return null;
+
+        Class<?> current = block.getClass();
+        while (current != null && Block.class.isAssignableFrom(current)) {
+            var loggable = BLOCK_HANDLERS.get(current);
+            if (loggable != null) return loggable;
+            current = current.getSuperclass();
+        }
+
+        return null;
     }
 
 }

@@ -1,45 +1,60 @@
 package fluidlog.client;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraftforge.client.event.RenderWorldEvent;
 import net.minecraftforge.fluids.Fluid;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import fluidlog.FluidloggingManager;
+import fluidlog.FluidLoggingManager;
 
 @SideOnly(Side.CLIENT)
 public class FluidRenderer {
 
-    @SubscribeEvent
-    public void render(RenderWorldEvent.Post event) {
-        if (event.pass != 1) return;
-        Chunk chunk = null;
-        var chunkData = FluidloggingManager.getChunkData(chunk);
-        if (chunkData == null || chunkData.isChunkEmpty()) return;
+    //@SubscribeEvent
+    public void render(RenderWorldEvent.Pre event) {
+        var world = Minecraft.getMinecraft().theWorld;
+        if (world == null || event.pass != 0) return;
 
-        for (Map.Entry<Integer, Fluid> entry : chunkData.getFluids()
-            .entrySet()) {
-            int packedCoord = entry.getKey();
+        var renderer = event.renderer;
+
+        int chunkX = renderer.posX >> 4;
+        int chunkZ = renderer.posZ >> 4;
+
+        var chunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
+
+        var data = FluidLoggingManager.getChunkFluidLoggingData(chunk);
+        if (data == null) return;
+
+        var toRender = data.getFluids().entrySet().stream().filter(entry->{
             var fluid = entry.getValue();
+            var block = fluid.getBlock();
+            return block != null;
+        }).collect(Collectors.toList());
 
-            // todo render visible fluidlogged positions
+        if (toRender.isEmpty()) return;
 
-            // unpack position
-            int localX = packedCoord & 0xF;
-            int localY = (packedCoord >> 8) & 0xFF;
-            int localZ = (packedCoord >> 4) & 0xF;
+        var tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        for (Map.Entry<Integer, Fluid> entry : toRender) {
+            int packedCoord = entry.getKey();
 
-            renderFluid(chunk, localX, localY, localZ, fluid);
+            int chunkBlockPosX = packedCoord & 0xF;
+            int y = (packedCoord >> 8) & 0xFF;
+            int chunkBlockPosZ = (packedCoord >> 4) & 0xF;
+
+            int x = (chunkX << 4) + chunkBlockPosX;
+            int z = (chunkZ << 4) + chunkBlockPosZ;
+
+            event.renderBlocks.renderBlockLiquid(entry.getValue().getBlock(), x, y, z);
         }
-
-    }
-
-    private void renderFluid(Chunk chunk, int x, int y, int z, Fluid fluid) {
-
+        tessellator.draw();
     }
 
 }
