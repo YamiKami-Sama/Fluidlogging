@@ -14,7 +14,7 @@ import ganymedes01.etfuturum.entities.EntityNewBoat;
 public class MixinEntityNewBoat {
 
     @Redirect(
-        method = {"getWaterLevelAbove", "checkInWater", "getUnderwaterStatus", "updateFallState"},
+        method = { "getWaterLevelAbove", "checkInWater", "getUnderwaterStatus", "updateFallState" },
         at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getBlock(III)Lnet/minecraft/block/Block;"),
         remap = false)
     private Block fluidlogging$getBlock(World world, int x, int y, int z) {

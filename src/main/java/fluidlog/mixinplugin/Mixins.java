@@ -1,9 +1,9 @@
 package fluidlog.mixinplugin;
 
+import javax.annotation.Nonnull;
+
 import com.gtnewhorizon.gtnhmixins.builders.IMixins;
 import com.gtnewhorizon.gtnhmixins.builders.MixinBuilder;
-
-import javax.annotation.Nonnull;
 
 public enum Mixins implements IMixins {
 

@@ -5,6 +5,7 @@ import static fluidlog.common.data.FluidLoggingChunkData.FLUIDS_DATA_TAG;
 import java.util.stream.Collectors;
 
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
@@ -24,6 +25,8 @@ import fluidlog.common.network.FluidlogNetwork;
 
 public class FluidLoggingEventHandler {
 
+    private static Chunk LAST_UNLOAD_CHUNK;
+
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload event) {
         FluidLoggingManagerImpl.clearWorldFluid(event.world);
@@ -40,13 +43,17 @@ public class FluidLoggingEventHandler {
     @SubscribeEvent
     public void onChunkSave(ChunkDataEvent.Save event) {
         var fluidChunkData = FluidLoggingManagerImpl.getChunkFluidLoggingData(event.getChunk());
-        if (fluidChunkData == null) return;
+        if (fluidChunkData == null || fluidChunkData.isChunkEmpty()) return;
         fluidChunkData.writeToNBT(event.getData());
+        if (LAST_UNLOAD_CHUNK == event.getChunk()) FluidLoggingManagerImpl.unload(event.getChunk());
     }
 
     @SubscribeEvent
     public void onChunkUnload(ChunkEvent.Unload event) {
-        FluidLoggingManagerImpl.unload(event.getChunk());
+        // Unload is trigger before save, but save come right after
+        // So only applying client clear here, let the clear for server side after the save
+        if (event.world.isRemote) FluidLoggingManagerImpl.unload(event.getChunk());
+        else LAST_UNLOAD_CHUNK = event.getChunk();
     }
 
     @SubscribeEvent

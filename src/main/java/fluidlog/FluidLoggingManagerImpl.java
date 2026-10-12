@@ -3,6 +3,9 @@ package fluidlog;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
@@ -18,9 +21,6 @@ import fluidlog.common.data.FluidLoggingChunkData;
 import fluidlog.common.network.FluidlogNetwork;
 import fluidlog.common.registry.FluidloggingRegistry;
 import fluidlog.mixins.early.ChunkCacheAccessor;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class FluidLoggingManagerImpl extends AbstractFluidLoggingManager {
 

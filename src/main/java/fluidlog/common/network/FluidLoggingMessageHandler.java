@@ -18,7 +18,7 @@ public class FluidLoggingMessageHandler implements IMessageHandler<FluidLoggingU
 
                 var fluid = message.getFluid();
                 if (fluid == null) {
-                    AbstractFluidLoggingManager.INSTANCE.clearFluid(world, message.x, message.y, message.z);
+                    AbstractFluidLoggingManager.INSTANCE.clearFluidNoCheck(world, message.x, message.y, message.z);
                 } else {
                     AbstractFluidLoggingManager.INSTANCE.setFluid(world, message.x, message.y, message.z, fluid);
                 }

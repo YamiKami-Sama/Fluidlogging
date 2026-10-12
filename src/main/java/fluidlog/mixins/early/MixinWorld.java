@@ -79,11 +79,11 @@ public abstract class MixinWorld {
         if (loggedFluidAtPos != null) {
             var fluidBlock = loggedFluidAtPos.getBlock();
             if (currentBlock == Blocks.air && fluidBlock != null) {
-                AbstractFluidLoggingManager.INSTANCE.clearFluid(world, x, y, z);
+                AbstractFluidLoggingManager.INSTANCE.clearFluidNoCheck(world, x, y, z);
                 // world.setBlock(x, y, z, fluidBlock, 0, flags);
             } else if (!AbstractFluidLoggingManager.INSTANCE
                 .canFluidLog(world, x, y, z, currentBlock, blockMeta, loggedFluidAtPos)) {
-                    AbstractFluidLoggingManager.INSTANCE.clearFluid(world, x, y, z);
+                    AbstractFluidLoggingManager.INSTANCE.clearFluidNoCheck(world, x, y, z);
                 }
         }
     }
