@@ -1,7 +1,7 @@
 package fluidlog.common.data;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -16,7 +16,7 @@ public class FluidLoggingChunkData {
 
     public static final String FLUIDS_DATA_TAG = "fl_data";
 
-    private final Map<Integer, Fluid> fluids = new HashMap<>();
+    private final Map<Integer, Fluid> fluids = new ConcurrentHashMap<>();
 
     private static int toKey(int x, int y, int z) {
         return (x & 15) | ((z & 15) << 4) | ((y & 255) << 8);
@@ -55,12 +55,10 @@ public class FluidLoggingChunkData {
         var fluidsData = new NBTTagList();
 
         for (Map.Entry<Integer, Fluid> entry : fluids.entrySet()) {
+            var fluidName = FluidRegistry.getFluidName(entry.getValue());
             var fluidTag = new NBTTagCompound();
             fluidTag.setInteger("k", entry.getKey());
-            fluidTag.setInteger(
-                "v",
-                entry.getValue()
-                    .getID());
+            fluidTag.setString("v", fluidName);
             fluidsData.appendTag(fluidTag);
         }
         nbt.setTag(FLUIDS_DATA_TAG, fluidsData);
@@ -73,12 +71,14 @@ public class FluidLoggingChunkData {
         for (int i = 0; i < fluidsData.tagCount(); i++) {
             var fluidData = fluidsData.getCompoundTagAt(i);
             if (fluidData.hasKey("k") && fluidData.hasKey("v")) {
-                var fluidId = fluidData.getInteger("v");
                 try {
-                    var fluid = FluidRegistry.getFluid(fluidId);
-                    fluids.put(fluidData.getInteger("k"), fluid);
+                    var fluidName = fluidData.getString("v");
+                    var fluid = FluidRegistry.getFluid(fluidName);
+                    if (fluid == null)
+                        Fluidlog.LOGGER.error("Error reading fluid for name {}, a removed fluid ?", fluidName);
+                    else fluids.put(fluidData.getInteger("k"), fluid);
                 } catch (Exception e) {
-                    Fluidlog.LOGGER.error("Error reading fluid for id {}, a removed fluid ?", fluidId, e);
+                    Fluidlog.LOGGER.error("Error reading fluid name", e);
                 }
             }
         }

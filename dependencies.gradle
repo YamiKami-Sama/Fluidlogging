@@ -35,6 +35,11 @@
  */
 dependencies {
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:NotEnoughItems:2.7.69-GTNH:dev")
-    compileOnlyApi("com.github.GTNewHorizons:BuildCraft:7.1.64:dev") { transitive = false }
-    api("com.github.GTNewHorizons:BuildCraft:7.1.64:dev")
+    runtimeOnlyNonPublishable("com.github.GTNewHorizons:GTNHLib:0.11.37:dev") { transitive = false }
+
+    compileOnly("com.github.GTNewHorizons:BuildCraft:7.1.64:dev") { transitive = false }
+    runtimeOnlyNonPublishable("com.github.GTNewHorizons:BuildCraft:7.1.64:dev")
+
+    compileOnly("ganymedes01.etfuturum:Et-Futurum-Requiem:2.6.63-GTNH:dev")
+    runtimeOnlyNonPublishable("ganymedes01.etfuturum:Et-Futurum-Requiem:2.6.63-GTNH:dev")
 }

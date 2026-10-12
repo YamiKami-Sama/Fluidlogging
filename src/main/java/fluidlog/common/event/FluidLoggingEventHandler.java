@@ -2,11 +2,13 @@ package fluidlog.common.event;
 
 import static fluidlog.common.data.FluidLoggingChunkData.FLUIDS_DATA_TAG;
 
+import java.util.stream.Collectors;
+
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
@@ -14,13 +16,16 @@ import net.minecraftforge.fluids.FluidStack;
 
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import fluidlog.FluidLoggingManager;
 import fluidlog.api.FluidLogging;
+import fluidlog.common.network.FluidLoggingBatchUpdateMessage;
+import fluidlog.common.network.FluidlogNetwork;
 
 public class FluidLoggingEventHandler {
 
     @SubscribeEvent
-    public void onWorldUnload(WorldEvent.Unload event){
+    public void onWorldUnload(WorldEvent.Unload event) {
         FluidLoggingManager.clearFluid(event.world);
     }
 
@@ -28,10 +33,8 @@ public class FluidLoggingEventHandler {
     public void onChunkLoad(ChunkDataEvent.Load event) {
         var root = event.getData();
         if (!root.hasKey(FLUIDS_DATA_TAG)) return;
-
-        var fluidChunkData = FluidLoggingManager.getChunkFluidLoggingData(event.getChunk());
-        if (fluidChunkData == null) return;
-        fluidChunkData.readFromNBT(root);
+        FluidLoggingManager.getOrCreateChunkFluidLoggingData(event.getChunk())
+            .readFromNBT(root);
     }
 
     @SubscribeEvent
@@ -47,15 +50,46 @@ public class FluidLoggingEventHandler {
     }
 
     @SubscribeEvent
-    public void onBreak(BlockEvent.BreakEvent event) {
-        var world = event.world;
-        if (world.isRemote) return;
+    public void onChunkWatch(ChunkWatchEvent.Watch event) {
+        var chunk = event.chunk;
+        var player = event.player;
+        var world = event.player.worldObj;
 
-        var fluid = FluidLogging.getFluid(world, event.x, event.y, event.z);
-        if (fluid == null) return;
+        var data = FluidLoggingManager.getChunkFluidLoggingData(world, chunk.chunkXPos, chunk.chunkZPos);
 
-        world.setBlock(event.x, event.y, event.z, fluid.getBlock(), 0, 3); // 1 (block update) + 2 (notify client) = 3
-        FluidLoggingManager.clearFluid(world, event.x, event.y, event.z);
+        if (data != null) {
+            var entryList = data.getFluids()
+                .entrySet()
+                .stream()
+                .map((entry) -> {
+                    var packed = entry.getKey();
+
+                    int localX = packed & 0xF;
+                    int localZ = (packed >> 4) & 0xF;
+
+                    int x = (chunk.chunkXPos << 4) + localX;
+                    int y = (packed >> 8) & 0xFF;
+                    int z = (chunk.chunkZPos << 4) + localZ;
+
+                    return new FluidLoggingBatchUpdateMessage.FluidLoggingEntry(
+                        x,
+                        y,
+                        z,
+                        entry.getValue()
+                            .getName());
+                })
+                .collect(Collectors.toList());
+            FluidlogNetwork.sendBatchFluidUpdate(world.provider.dimensionId, player, entryList);
+        }
+    }
+
+    @SubscribeEvent
+    public void onWorldTick(TickEvent.WorldTickEvent event) {
+        if (event.phase != TickEvent.Phase.END || event.world.isRemote) {
+            return;
+        }
+
+        FluidLoggingManager.tickFluids(event.world);
     }
 
     @SubscribeEvent
@@ -87,11 +121,12 @@ public class FluidLoggingEventHandler {
 
         var target = event.target;
 
-        if( !FluidLogging.canFluidLog(event.world, target.blockX, target.blockY, target.blockZ, fluidStack.getFluid()) ){
+        if (!FluidLogging
+            .canFluidLog(event.world, target.blockX, target.blockY, target.blockZ, fluidStack.getFluid())) {
             return;
         }
 
-        if(!event.world.isRemote) FluidLogging.setFluid(event.world, target.blockX, target.blockY, target.blockZ, fluidStack.getFluid());
+        FluidLogging.setFluid(event.world, target.blockX, target.blockY, target.blockZ, fluidStack.getFluid());
 
         event.result = FluidContainerRegistry.drainFluidContainer(event.current);
         event.setResult(Event.Result.ALLOW);
@@ -104,9 +139,7 @@ public class FluidLoggingEventHandler {
         if (filledBucket == null) return;
 
         var target = event.target;
-        if(!event.world.isRemote){
-            if (!FluidLogging.clearFluid(event.world, target.blockX, target.blockY, target.blockZ)) return;
-        }
+        if (FluidLogging.clearFluid(event.world, target.blockX, target.blockY, target.blockZ) == null) return;
 
         event.result = filledBucket;
         event.setResult(Event.Result.ALLOW);

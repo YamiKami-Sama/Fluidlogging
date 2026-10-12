@@ -1,4 +1,4 @@
-package fluidlog.mixins;
+package fluidlog.mixins.early;
 
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
@@ -11,4 +11,10 @@ public interface ChunkCacheAccessor {
 
     @Accessor("worldObj")
     World fluidlogging$getWorld();
+
+    @Accessor("chunkX")
+    int fluidlogging$getChunkX();
+
+    @Accessor("chunkZ")
+    int fluidlogging$getChunkZ();
 }

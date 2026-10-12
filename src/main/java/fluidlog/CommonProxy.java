@@ -15,6 +15,7 @@ import net.minecraft.block.BlockHopper;
 import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockPane;
+import net.minecraft.block.BlockPistonMoving;
 import net.minecraft.block.BlockRail;
 import net.minecraft.block.BlockRailDetector;
 import net.minecraft.block.BlockRailPowered;
@@ -26,6 +27,7 @@ import net.minecraft.block.BlockStairs;
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraftforge.common.MinecraftForge;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -37,12 +39,18 @@ import fluidlog.common.registry.FluidloggingRegistry;
 
 public class CommonProxy {
 
+    public static FluidLoggingEventHandler EVENT_HANDLER;
+
     // preInit "Run before anything else. Read your config, create blocks, items, etc, and register them with the
     // GameRegistry." (Remove if not needed)
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
         FluidlogNetwork.init();
-        MinecraftForge.EVENT_BUS.register(new FluidLoggingEventHandler());
+        EVENT_HANDLER = new FluidLoggingEventHandler();
+        MinecraftForge.EVENT_BUS.register(EVENT_HANDLER);
+        FMLCommonHandler.instance()
+            .bus()
+            .register(EVENT_HANDLER);
     }
 
     // load "Do your mod setup. Build whatever data structures you care about. Register recipes." (Remove if not needed)
@@ -63,6 +71,7 @@ public class CommonProxy {
         FluidloggingRegistry.register(BlockDoor.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
         FluidloggingRegistry.register(BlockEnchantmentTable.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
         FluidloggingRegistry.register(BlockLadder.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
+        FluidloggingRegistry.register(BlockPistonMoving.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
         FluidloggingRegistry.register(BlockRail.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
         FluidloggingRegistry.register(BlockRailDetector.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
         FluidloggingRegistry.register(BlockRailPowered.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
@@ -71,6 +80,7 @@ public class CommonProxy {
         FluidloggingRegistry.register(BlockStairs.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
         FluidloggingRegistry.register(BlockTrapDoor.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
         FluidloggingRegistry.register(BlockLeaves.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
+        //TODO conf ? maybe intermod commmunication
     }
 
     // postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)

@@ -1,8 +1,8 @@
 {
   "required": true,
   "minVersion": "0.8.5-GTNH",
-  "package": "fluidlog.mixins",
+  "package": "fluidlog.mixins.early",
   "refmap": "mixins.fluidlog.refmap.json",
-  "target": "@env(CLIENT)",
+  "target": "@env(DEFAULT)",
   "compatibilityLevel": "JAVA_8"
 }

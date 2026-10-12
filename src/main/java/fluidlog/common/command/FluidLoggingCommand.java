@@ -11,7 +11,8 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import fluidlog.api.FluidLogging;
-import fluidlog.common.registry.FluidloggingRegistry;
+import fluidlog.common.network.FluidLoggingBatchUpdateMessage;
+import fluidlog.common.network.FluidlogNetwork;
 
 public class FluidLoggingCommand extends CommandBase {
 
@@ -76,32 +77,21 @@ public class FluidLoggingCommand extends CommandBase {
         var centerY = MathHelper.floor_double(sender.getPlayerCoordinates().posY);
         var centerZ = MathHelper.floor_double(sender.getPlayerCoordinates().posZ);
 
-        int changed = 0;
-
+        var updateList = new ArrayList<FluidLoggingBatchUpdateMessage.FluidLoggingEntry>();
+        var fluidName = fluid.getName();
         for (int x = centerX - radius; x <= centerX + radius; x++) {
             for (int y = centerY - radius; y <= centerY + radius; y++) {
                 for (int z = centerZ - radius; z <= centerZ + radius; z++) {
-                    var block = world.getBlock(x, y, z);
-                    if (FluidloggingRegistry.getBlockIFluidLoggable(block) == null) {
-                        continue;
+                    if (FluidLogging.setFluidNoUpdate(world, x, y, z, fluid)) {
+                        updateList.add(new FluidLoggingBatchUpdateMessage.FluidLoggingEntry(x, y, z, fluidName));
                     }
 
-                    if (!FluidLogging.canFluidLog(world, x, y, z, fluid)) {
-                        continue;
-                    }
-
-                    if (FluidLogging.isFluidLogged(world, x, y, z)) {
-                        continue;
-                    }
-
-                    FluidLogging.setFluid(world, x, y, z, fluid);
-
-                    changed++;
                 }
             }
         }
 
-        sender.addChatMessage(new ChatComponentText("FluidLogging fill: changed " + changed + " block(s)"));
+        sender.addChatMessage(new ChatComponentText("FluidLogging fill: changed " + updateList.size() + " block(s)"));
+        FluidlogNetwork.sendBatchFluidUpdate(world.provider.dimensionId, centerX, centerY, centerZ, updateList);
     }
 
     private void processClear(ICommandSender sender, int radius, String[] args) {
@@ -122,28 +112,26 @@ public class FluidLoggingCommand extends CommandBase {
         int centerY = MathHelper.floor_double(sender.getPlayerCoordinates().posY);
         int centerZ = MathHelper.floor_double(sender.getPlayerCoordinates().posZ);
 
+        var updateList = new ArrayList<FluidLoggingBatchUpdateMessage.FluidLoggingEntry>();
         int changed = 0;
 
         for (int x = centerX - radius; x <= centerX + radius; x++) {
             for (int y = centerY - radius; y <= centerY + radius; y++) {
                 for (int z = centerZ - radius; z <= centerZ + radius; z++) {
-
-                    if (FluidloggingRegistry.getBlockIFluidLoggable(world.getBlock(x, y, z)) == null) {
-                        continue;
-                    }
                     var fluid = FluidLogging.getFluid(world, x, y, z);
                     if (fluid == null || (filterFluid != null && fluid != filterFluid)) {
                         continue;
                     }
 
-                    FluidLogging.clearFluid(world, x, y, z);
-
-                    changed++;
+                    if (FluidLogging.clearFluid(world, x, y, z) != null) {
+                        updateList.add(new FluidLoggingBatchUpdateMessage.FluidLoggingEntry(x, y, z, null));
+                    }
                 }
             }
         }
 
-        sender.addChatMessage(new ChatComponentText("FluidLogging clear: changed " + changed + " block(s)"));
+        sender.addChatMessage(new ChatComponentText("FluidLogging clear: changed " + updateList.size() + " block(s)"));
+        FluidlogNetwork.sendBatchFluidUpdate(world.provider.dimensionId, centerX, centerY, centerZ, updateList);
     }
 
     private void sendUsage(ICommandSender sender) {

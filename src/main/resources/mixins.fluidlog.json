@@ -2,6 +2,6 @@
   "required": true,
   "minVersion": "0.8.5-GTNH",
   "package": "fluidlog.mixins",
-  "target": "@env(CLIENT)",
+  "target": "@env(DEFAULT)",
   "compatibilityLevel": "JAVA_8"
 }
