@@ -1,9 +1,9 @@
 package fluidlog.mixinplugin;
 
-import javax.annotation.Nonnull;
-
 import com.gtnewhorizon.gtnhmixins.builders.IMixins;
 import com.gtnewhorizon.gtnhmixins.builders.MixinBuilder;
+
+import javax.annotation.Nonnull;
 
 public enum Mixins implements IMixins {
 
@@ -23,10 +23,10 @@ public enum Mixins implements IMixins {
         .addCommonMixins("MixinVanillaBlockPistonBase")
         .addExcludedMod(TargetMods.ET_FUTURUM)),
     BLOCK_PISTON_BASE_EFR(new MixinBuilder().setPhase(Phase.EARLY)
-        .addCommonMixins("compat.MixinBlockPistonBaseEFR")
+        .addCommonMixins("compat.efr.MixinBlockPistonBase")
         .addRequiredMod(TargetMods.ET_FUTURUM)),
     BLOCK_SPONGE_EFR(new MixinBuilder().setPhase(Phase.EARLY)
-        .addCommonMixins("compat.MixinBlockSpongeEFR")
+        .addCommonMixins("compat.efr.MixinBlockSponge")
         .addRequiredMod(TargetMods.ET_FUTURUM)),
     BLOCK_FARMLAND(new MixinBuilder().setPhase(Phase.EARLY)
         .addCommonMixins("MixinBlockFarmland")),
@@ -40,6 +40,8 @@ public enum Mixins implements IMixins {
         .addClientMixins("ChunkCacheAccessor")),
     ENTITY(new MixinBuilder().setPhase(Phase.EARLY)
         .addCommonMixins("MixinEntity")),
+    ENTITY_NEW_BOAT_EFR(new MixinBuilder().setPhase(Phase.EARLY)
+        .addCommonMixins("compat.efr.MixinEntityNewBoat")),
     WORLD(new MixinBuilder().setPhase(Phase.EARLY)
         .addCommonMixins("MixinWorld")),
     // not working with angelica, so just removing it

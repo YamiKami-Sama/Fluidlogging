@@ -1,4 +1,4 @@
-package fluidlog.mixins.early.compat;
+package fluidlog.mixins.early.compat.efr;
 
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
@@ -15,7 +15,7 @@ import fluidlog.common.FluidLoggingUtils;
 import ganymedes01.etfuturum.blocks.BlockSponge;
 
 @Mixin(BlockSponge.class)
-public class MixinBlockSpongeEFR {
+public class MixinBlockSponge {
 
     @Redirect(
         method = "absorb",

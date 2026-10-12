@@ -1,4 +1,4 @@
-package fluidlog.mixins.early.compat;
+package fluidlog.mixins.early.compat.efr;
 
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockPistonBase;
@@ -13,7 +13,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import fluidlog.api.AbstractFluidLoggingManager;
 
 @Mixin(value = BlockPistonBase.class, priority = 1100)
-public class MixinBlockPistonBaseEFR {
+public class MixinBlockPistonBase {
 
     @WrapOperation(
         method = "etfuturum$pushBlocks",
