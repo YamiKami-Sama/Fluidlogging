@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import fluidlog.api.FluidLogging;
+import fluidlog.api.AbstractFluidLoggingManager;
 
 @Mixin(BlockFire.class)
 public class MixinBlockFire {
@@ -22,7 +22,7 @@ public class MixinBlockFire {
             remap = false))
     private int fluidlogging$tryCatchFire$getFlammability(Block block, IBlockAccess world, int x, int y, int z,
         ForgeDirection side) {
-        var fluid = FluidLogging.getFluid(world, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
         if (fluid != null && fluid.getBlock() != null) return fluid.getBlock()
             .getFlammability(world, x, y, z, side);
         return block.getFlammability(world, x, y, z, side);
@@ -37,7 +37,7 @@ public class MixinBlockFire {
         remap = false)
     private boolean fluidlogging$canCatchFire$isFlammable(Block block, IBlockAccess world, int x, int y, int z,
         ForgeDirection side) {
-        var fluid = FluidLogging.getFluid(world, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
         if (fluid != null && fluid.getBlock() != null) return fluid.getBlock()
             .isFlammable(world, x, y, z, side);
         return block.isFlammable(world, x, y, z, side);

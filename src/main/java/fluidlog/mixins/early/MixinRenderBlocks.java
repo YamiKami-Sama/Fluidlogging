@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import fluidlog.api.FluidLogging;
+import fluidlog.api.AbstractFluidLoggingManager;
 import fluidlog.common.FluidLoggingUtils;
 
 @Mixin(RenderBlocks.class)
@@ -37,7 +37,7 @@ public class MixinRenderBlocks {
             target = "Lnet/minecraft/block/Block;shouldSideBeRendered(Lnet/minecraft/world/IBlockAccess;IIII)Z"))
     private boolean fluidlogging$getLiquidHeight$shouldSideBeRendered(Block block, IBlockAccess blockAccess, int x,
         int y, int z, int side) {
-        var fluid = FluidLogging.getFluid(blockAccess, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(blockAccess, x, y, z);
         if (fluid != null && fluid.canBePlacedInWorld()) {
             return fluid.getBlock()
                 .getMaterial() != block.getMaterial()

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import fluidlog.api.FluidLogging;
+import fluidlog.api.AbstractFluidLoggingManager;
 
 @Mixin(BlockPistonBase.class)
 public class MixinVanillaBlockPistonBase {
@@ -21,7 +21,7 @@ public class MixinVanillaBlockPistonBase {
         var block = world.getBlock(x, y, z);
         if (block instanceof BlockLiquid || block instanceof IFluidBlock) return true;
 
-        var fluid = FluidLogging.getFluid(world, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
         if (fluid != null && fluid.getBlock() != null) {
             return world.setBlock(x, y, z, fluid.getBlock());
         }

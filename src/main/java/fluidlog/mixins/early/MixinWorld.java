@@ -19,8 +19,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 
-import fluidlog.FluidLoggingManager;
-import fluidlog.api.FluidLogging;
+import fluidlog.api.AbstractFluidLoggingManager;
 import fluidlog.common.FluidLoggingUtils;
 
 @Mixin(World.class)
@@ -38,7 +37,7 @@ public abstract class MixinWorld {
         at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getBlock(III)Lnet/minecraft/block/Block;"))
     private Block fluidlogging$handleMaterialAcceleration$getBlock(World world, int x, int y, int z,
         Operation<Block> original) {
-        var fluid = FluidLogging.getFluid(world, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
         if (fluid == null || !fluid.canBePlacedInWorld()) return original.call(world, x, y, z);
         return fluid.getBlock();
     }
@@ -71,20 +70,21 @@ public abstract class MixinWorld {
 
         // Fluid Source meta is 0
         if (fluid != null && oldBlockMeta.get() == 0
-            && FluidLogging.canFluidLog(world, x, y, z, currentBlock, blockMeta, fluid)) {
-            FluidLoggingManager.setFluid(world, x, y, z, fluid);
+            && AbstractFluidLoggingManager.INSTANCE.canFluidLog(world, x, y, z, currentBlock, blockMeta, fluid)) {
+            AbstractFluidLoggingManager.INSTANCE.setFluid(world, x, y, z, fluid);
             return;
         }
 
-        var loggedFluidAtPos = FluidLoggingManager.getFluid(world, x, y, z);
+        var loggedFluidAtPos = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
         if (loggedFluidAtPos != null) {
             var fluidBlock = loggedFluidAtPos.getBlock();
             if (currentBlock == Blocks.air && fluidBlock != null) {
-                FluidLoggingManager.clearFluid(world, x, y, z);
+                AbstractFluidLoggingManager.INSTANCE.clearFluid(world, x, y, z);
                 // world.setBlock(x, y, z, fluidBlock, 0, flags);
-            } else if (!FluidLogging.canFluidLog(world, x, y, z, currentBlock, blockMeta, loggedFluidAtPos)) {
-                FluidLoggingManager.clearFluid(world, x, y, z);
-            }
+            } else if (!AbstractFluidLoggingManager.INSTANCE
+                .canFluidLog(world, x, y, z, currentBlock, blockMeta, loggedFluidAtPos)) {
+                    AbstractFluidLoggingManager.INSTANCE.clearFluid(world, x, y, z);
+                }
         }
     }
 
@@ -98,7 +98,7 @@ public abstract class MixinWorld {
         var world = (World) (Object) this;
 
         if (blockIn == Blocks.air) {
-            var fluid = FluidLoggingManager.getFluid(world, x, y, z);
+            var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
 
             if (fluid != null && fluid.getBlock() != null) {
                 blockIn = fluid.getBlock();

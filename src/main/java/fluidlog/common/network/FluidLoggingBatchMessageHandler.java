@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import fluidlog.FluidLoggingManager;
+import fluidlog.api.AbstractFluidLoggingManager;
 
 public class FluidLoggingBatchMessageHandler implements IMessageHandler<FluidLoggingBatchUpdateMessage, IMessage> {
 
@@ -23,7 +23,8 @@ public class FluidLoggingBatchMessageHandler implements IMessageHandler<FluidLog
                     }
 
                     var fluid = fluidEntry.getFluid();
-                    FluidLoggingManager.setFluid(world, fluidEntry.x, fluidEntry.y, fluidEntry.z, fluid);
+                    AbstractFluidLoggingManager.INSTANCE
+                        .setFluid(world, fluidEntry.x, fluidEntry.y, fluidEntry.z, fluid);
                 }
             });
 

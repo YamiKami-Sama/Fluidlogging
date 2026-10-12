@@ -17,8 +17,8 @@ import net.minecraftforge.fluids.FluidStack;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
-import fluidlog.FluidLoggingManager;
-import fluidlog.api.FluidLogging;
+import fluidlog.FluidLoggingManagerImpl;
+import fluidlog.api.AbstractFluidLoggingManager;
 import fluidlog.common.network.FluidLoggingBatchUpdateMessage;
 import fluidlog.common.network.FluidlogNetwork;
 
@@ -26,27 +26,27 @@ public class FluidLoggingEventHandler {
 
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload event) {
-        FluidLoggingManager.clearFluid(event.world);
+        FluidLoggingManagerImpl.clearWorldFluid(event.world);
     }
 
     @SubscribeEvent
     public void onChunkLoad(ChunkDataEvent.Load event) {
         var root = event.getData();
         if (!root.hasKey(FLUIDS_DATA_TAG)) return;
-        FluidLoggingManager.getOrCreateChunkFluidLoggingData(event.getChunk())
+        FluidLoggingManagerImpl.getOrCreateChunkFluidLoggingData(event.getChunk())
             .readFromNBT(root);
     }
 
     @SubscribeEvent
     public void onChunkSave(ChunkDataEvent.Save event) {
-        var fluidChunkData = FluidLoggingManager.getChunkFluidLoggingData(event.getChunk());
+        var fluidChunkData = FluidLoggingManagerImpl.getChunkFluidLoggingData(event.getChunk());
         if (fluidChunkData == null) return;
         fluidChunkData.writeToNBT(event.getData());
     }
 
     @SubscribeEvent
     public void onChunkUnload(ChunkEvent.Unload event) {
-        FluidLoggingManager.unload(event.getChunk());
+        FluidLoggingManagerImpl.unload(event.getChunk());
     }
 
     @SubscribeEvent
@@ -55,7 +55,7 @@ public class FluidLoggingEventHandler {
         var player = event.player;
         var world = event.player.worldObj;
 
-        var data = FluidLoggingManager.getChunkFluidLoggingData(world, chunk.chunkXPos, chunk.chunkZPos);
+        var data = FluidLoggingManagerImpl.getChunkFluidLoggingData(world, chunk.chunkXPos, chunk.chunkZPos);
 
         if (data != null) {
             var entryList = data.getFluids()
@@ -89,7 +89,7 @@ public class FluidLoggingEventHandler {
             return;
         }
 
-        FluidLoggingManager.tickFluids(event.world);
+        FluidLoggingManagerImpl.tickFluids(event.world);
     }
 
     @SubscribeEvent
@@ -106,7 +106,7 @@ public class FluidLoggingEventHandler {
 
         if (!event.world.canMineBlock(event.entityPlayer, x, y, z)) return;
 
-        var fluid = FluidLogging.getFluid(event.world, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(event.world, x, y, z);
 
         if (fluid == null) {
             placeFluid(event);
@@ -121,12 +121,13 @@ public class FluidLoggingEventHandler {
 
         var target = event.target;
 
-        if (!FluidLogging
+        if (!AbstractFluidLoggingManager.INSTANCE
             .canFluidLog(event.world, target.blockX, target.blockY, target.blockZ, fluidStack.getFluid())) {
             return;
         }
 
-        FluidLogging.setFluid(event.world, target.blockX, target.blockY, target.blockZ, fluidStack.getFluid());
+        AbstractFluidLoggingManager.INSTANCE
+            .setFluid(event.world, target.blockX, target.blockY, target.blockZ, fluidStack.getFluid());
 
         event.result = FluidContainerRegistry.drainFluidContainer(event.current);
         event.setResult(Event.Result.ALLOW);
@@ -139,7 +140,8 @@ public class FluidLoggingEventHandler {
         if (filledBucket == null) return;
 
         var target = event.target;
-        if (FluidLogging.clearFluid(event.world, target.blockX, target.blockY, target.blockZ) == null) return;
+        if (AbstractFluidLoggingManager.INSTANCE.clearFluid(event.world, target.blockX, target.blockY, target.blockZ)
+            == null) return;
 
         event.result = filledBucket;
         event.setResult(Event.Result.ALLOW);

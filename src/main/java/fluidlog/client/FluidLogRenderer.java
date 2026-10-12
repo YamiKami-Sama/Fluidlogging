@@ -6,13 +6,13 @@ import net.minecraftforge.fluids.RenderBlockFluid;
 
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 
-import fluidlog.FluidLoggingManager;
+import fluidlog.api.AbstractFluidLoggingManager;
 
 public class FluidLogRenderer {
 
     public static boolean renderFluid(int renderPass, RenderBlocks renderBlocks, int x, int y, int z,
         LocalBooleanRef tryRenderInPass) {
-        var fluid = FluidLoggingManager.getFluid(renderBlocks.blockAccess, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(renderBlocks.blockAccess, x, y, z);
         if (fluid == null || fluid.getBlock() == null) return false;
 
         var block = fluid.getBlock();

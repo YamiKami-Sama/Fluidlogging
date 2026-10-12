@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import fluidlog.api.FluidLogging;
+import fluidlog.api.AbstractFluidLoggingManager;
 import fluidlog.common.FluidLoggingUtils;
 
 @Mixin(Block.class)
@@ -24,7 +24,7 @@ public class MixinBlock {
         CallbackInfoReturnable<Integer> cir) {
         int blockLight = cir.getReturnValueI();
 
-        var fluid = FluidLogging.getFluid(world, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
         if (fluid == null || fluid.getBlock() == null) {
             return;
         }
@@ -45,7 +45,7 @@ public class MixinBlock {
         CallbackInfoReturnable<Integer> cir) {
         int blockOpacity = cir.getReturnValueI();
 
-        var fluid = FluidLogging.getFluid(world, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
         if (fluid == null || fluid.getBlock() == null) {
             return;
         }
@@ -62,7 +62,7 @@ public class MixinBlock {
         at = @At(value = "INVOKE", target = "Lnet/minecraft/world/IBlockAccess;getBlockMetadata(III)I"),
         remap = false)
     private int fluidlogging$getBlockMetadata(IBlockAccess blockAccess, int x, int y, int z) {
-        var fluid = FluidLogging.getFluid(blockAccess, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(blockAccess, x, y, z);
         if (fluid != null && fluid.canBePlacedInWorld()) return 0;
 
         return blockAccess.getBlockMetadata(x, y, z);

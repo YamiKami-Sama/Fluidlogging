@@ -10,7 +10,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
-import fluidlog.api.FluidLogging;
+import fluidlog.api.AbstractFluidLoggingManager;
 import fluidlog.common.network.FluidLoggingBatchUpdateMessage;
 import fluidlog.common.network.FluidlogNetwork;
 
@@ -82,7 +82,7 @@ public class FluidLoggingCommand extends CommandBase {
         for (int x = centerX - radius; x <= centerX + radius; x++) {
             for (int y = centerY - radius; y <= centerY + radius; y++) {
                 for (int z = centerZ - radius; z <= centerZ + radius; z++) {
-                    if (FluidLogging.setFluidNoUpdate(world, x, y, z, fluid)) {
+                    if (AbstractFluidLoggingManager.INSTANCE.setFluidNoUpdate(world, x, y, z, fluid)) {
                         updateList.add(new FluidLoggingBatchUpdateMessage.FluidLoggingEntry(x, y, z, fluidName));
                     }
 
@@ -118,12 +118,12 @@ public class FluidLoggingCommand extends CommandBase {
         for (int x = centerX - radius; x <= centerX + radius; x++) {
             for (int y = centerY - radius; y <= centerY + radius; y++) {
                 for (int z = centerZ - radius; z <= centerZ + radius; z++) {
-                    var fluid = FluidLogging.getFluid(world, x, y, z);
+                    var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
                     if (fluid == null || (filterFluid != null && fluid != filterFluid)) {
                         continue;
                     }
 
-                    if (FluidLogging.clearFluid(world, x, y, z) != null) {
+                    if (AbstractFluidLoggingManager.INSTANCE.clearFluid(world, x, y, z) != null) {
                         updateList.add(new FluidLoggingBatchUpdateMessage.FluidLoggingEntry(x, y, z, null));
                     }
                 }

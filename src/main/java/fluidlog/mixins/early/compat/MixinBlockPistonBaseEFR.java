@@ -10,8 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-
-import fluidlog.api.FluidLogging;
+import fluidlog.api.AbstractFluidLoggingManager;
 
 @Mixin(value = BlockPistonBase.class, priority = 1100)
 public class MixinBlockPistonBaseEFR {
@@ -24,7 +23,7 @@ public class MixinBlockPistonBaseEFR {
         var block = world.getBlock(x, y, z);
         if (block instanceof BlockLiquid || block instanceof IFluidBlock) return true;
 
-        var fluid = FluidLogging.getFluid(world, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
         if (fluid != null && fluid.getBlock() != null) {
             return world.setBlock(x, y, z, fluid.getBlock());
         }

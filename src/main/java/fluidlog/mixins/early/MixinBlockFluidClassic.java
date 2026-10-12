@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import fluidlog.api.FluidLogging;
+import fluidlog.api.AbstractFluidLoggingManager;
 import fluidlog.common.FluidLoggingUtils;
 
 @Mixin(BlockFluidClassic.class)
@@ -52,7 +52,7 @@ public class MixinBlockFluidClassic {
         at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockMetadataWithNotify(IIIII)Z"))
     private boolean fluidlogging$updateTick$setBlockMetadataWithNotify(World world, int x, int y, int z, int meta,
         int flag) {
-        var fluid = FluidLogging.getFluid(world, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
         if (fluid != null && fluid.canBePlacedInWorld()) return false;
 
         return world.setBlockMetadataWithNotify(x, y, z, meta, flag);
@@ -64,7 +64,7 @@ public class MixinBlockFluidClassic {
             value = "INVOKE",
             target = "Lnet/minecraft/world/World;scheduleBlockUpdate(IIILnet/minecraft/block/Block;I)V"))
     private void fluidlogging$updateTick$scheduleBlockUpdate(World world, int x, int y, int z, Block block, int meta) {
-        if (FluidLogging.getFluid(world, x, y, z) != null) return;
+        if (AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z) != null) return;
         world.scheduleBlockUpdate(x, y, z, block, meta);
     }
 
@@ -74,7 +74,7 @@ public class MixinBlockFluidClassic {
             value = "INVOKE",
             target = "Lnet/minecraft/world/World;notifyBlocksOfNeighborChange(IIILnet/minecraft/block/Block;)V"))
     private void fluidlogging$updateTick$notifyBlocksOfNeighborChange(World world, int x, int y, int z, Block block) {
-        if (FluidLogging.getFluid(world, x, y, z) != null) return;
+        if (AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z) != null) return;
         world.notifyBlocksOfNeighborChange(x, y, z, block);
     }
 
@@ -82,7 +82,7 @@ public class MixinBlockFluidClassic {
         method = "flowIntoBlock",
         at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlock(IIILnet/minecraft/block/Block;)Z"))
     private boolean fluidlogging$flowIntoBlock$setBlock(World world, int x, int y, int z, Block block) {
-        if (FluidLogging.getFluid(world, x, y, z) != null) return false;
+        if (AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z) != null) return false;
         return world.setBlock(x, y, z, block);
     }
 
@@ -91,8 +91,9 @@ public class MixinBlockFluidClassic {
         at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlock(IIILnet/minecraft/block/Block;)Z"),
         remap = false)
     private boolean fluidlogging$drain$setBlock(World world, int x, int y, int z, Block block) {
-        var fluid = FluidLogging.getFluid(world, x, y, z);
-        if (fluid != null && fluid.canBePlacedInWorld()) return FluidLogging.clearFluid(world, x, y, z) != null;
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
+        if (fluid != null && fluid.canBePlacedInWorld())
+            return AbstractFluidLoggingManager.INSTANCE.clearFluid(world, x, y, z) != null;
 
         return world.setBlock(x, y, z, block);
     }

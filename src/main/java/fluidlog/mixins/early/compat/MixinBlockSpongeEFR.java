@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
-import fluidlog.api.FluidLogging;
+import fluidlog.api.AbstractFluidLoggingManager;
 import fluidlog.common.FluidLoggingUtils;
 import ganymedes01.etfuturum.blocks.BlockSponge;
 
@@ -28,9 +28,9 @@ public class MixinBlockSpongeEFR {
         method = "absorb",
         at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockToAir(III)Z"))
     private boolean fluidlogging$efrSetBlockToAir(World world, int x, int y, int z, Operation<Boolean> op) {
-        var fluid = FluidLogging.getFluid(world, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
         if (fluid != null) {
-            return FluidLogging.clearFluid(world, x, y, z) != null;
+            return AbstractFluidLoggingManager.INSTANCE.clearFluid(world, x, y, z) != null;
         }
 
         return op.call(world, x, y, z);

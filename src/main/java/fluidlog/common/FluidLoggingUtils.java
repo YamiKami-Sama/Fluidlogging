@@ -3,12 +3,12 @@ package fluidlog.common;
 import net.minecraft.block.Block;
 import net.minecraft.world.IBlockAccess;
 
-import fluidlog.api.FluidLogging;
+import fluidlog.api.AbstractFluidLoggingManager;
 
 public class FluidLoggingUtils {
 
     public static Block getFluidLoggedBlockOrBlock(IBlockAccess world, int x, int y, int z) {
-        var fluid = FluidLogging.getFluid(world, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
         if (fluid != null && fluid.canBePlacedInWorld()) {
             return fluid.getBlock();
         }
@@ -17,7 +17,7 @@ public class FluidLoggingUtils {
     }
 
     public static int getFluidLoggedBlockMetaOrBlockMeta(IBlockAccess world, int x, int y, int z) {
-        var fluid = FluidLogging.getFluid(world, x, y, z);
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
         if (fluid != null && fluid.canBePlacedInWorld()) {
             return 0;
         }
