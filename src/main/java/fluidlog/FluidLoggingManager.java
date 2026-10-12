@@ -114,15 +114,16 @@ public class FluidLoggingManager {
             chunkFluidLoggingData.setFluid(x & 15, y, z & 15, fluid);
         }
 
+        if (!evaporateWater) world.markAndNotifyBlock(
+            x,
+            y,
+            z,
+            world.getChunkFromBlockCoords(x, z),
+            oldFluid == null ? world.getBlock(x, y, z) : oldFluid.getBlock(),
+            fluid.getBlock(),
+            3);
+
         if (!world.isRemote) {
-            if (!evaporateWater) world.markAndNotifyBlock(
-                x,
-                y,
-                z,
-                world.getChunkFromBlockCoords(x, z),
-                oldFluid == null ? world.getBlock(x, y, z) : oldFluid.getBlock(),
-                fluid.getBlock(),
-                3);
             if (sendUpdate) FluidlogNetwork.sendFluidUpdate(world.provider.dimensionId, x, y, z, fluid);
         }
 

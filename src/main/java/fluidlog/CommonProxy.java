@@ -80,7 +80,7 @@ public class CommonProxy {
         FluidloggingRegistry.register(BlockStairs.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
         FluidloggingRegistry.register(BlockTrapDoor.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
         FluidloggingRegistry.register(BlockLeaves.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        //TODO conf ? maybe intermod commmunication
+        // TODO conf ? maybe intermod commmunication
     }
 
     // postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)
