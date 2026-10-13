@@ -129,7 +129,7 @@ public class FluidLoggingEventHandler {
         var target = event.target;
 
         if (!AbstractFluidLoggingManager.INSTANCE
-            .canFluidLog(event.world, target.blockX, target.blockY, target.blockZ, fluidStack.getFluid())) {
+            .canLogFluid(event.world, target.blockX, target.blockY, target.blockZ, fluidStack.getFluid())) {
             return;
         }
 

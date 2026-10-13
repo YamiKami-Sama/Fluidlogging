@@ -17,9 +17,10 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import fluidlog.api.AbstractFluidLoggingManager;
+import fluidlog.api.registry.FluidLoggingRegistry;
+import fluidlog.common.FluidLoggingUtils;
 import fluidlog.common.data.FluidLoggingChunkData;
 import fluidlog.common.network.FluidlogNetwork;
-import fluidlog.common.registry.FluidloggingRegistry;
 import fluidlog.mixins.early.ChunkCacheAccessor;
 
 public class FluidLoggingManagerImpl extends AbstractFluidLoggingManager {
@@ -29,6 +30,15 @@ public class FluidLoggingManagerImpl extends AbstractFluidLoggingManager {
 
     static {
         AbstractFluidLoggingManager.INSTANCE = new FluidLoggingManagerImpl();
+    }
+
+    private static final Map<Class<? extends Block>, Map<Integer, boolean[]>> BLOCK_RESTRICTED_FACES = new HashMap<>();
+
+    public static boolean[] getRestrictedFlowFaces(World world, int x, int y, int z) {
+        var block = world.getBlock(x, y, z);
+        var meta = world.getBlockMetadata(x, y, z);
+        return BLOCK_RESTRICTED_FACES.computeIfAbsent(block.getClass(), (b) -> new HashMap<>())
+            .computeIfAbsent(meta, (m) -> FluidLoggingUtils.computeBlockRestrictiveFlowFace(block, world, x, y, z));
     }
 
     @Nonnull
@@ -180,7 +190,7 @@ public class FluidLoggingManagerImpl extends AbstractFluidLoggingManager {
         if (fluid == null) return clearWorldFluid(blockAccess, x, y, z, sendUpdate) != null;
         var world = getWorld(blockAccess);
         if (world == null) return false;
-        if (!world.isRemote && !canFluidLog(world, x, y, z, fluid)) return false;
+        if (!world.isRemote && !canLogFluid(world, x, y, z, fluid)) return false;
 
         var dimId = world.provider.dimensionId;
         var dimData = getChunkData(world.isRemote).computeIfAbsent(dimId, k -> new HashMap<>());
@@ -238,7 +248,7 @@ public class FluidLoggingManagerImpl extends AbstractFluidLoggingManager {
         var world = getWorld(blockAccess);
         var block = world.getBlock(x, y, z);
         var meta = world.getBlockMetadata(x, y, z);
-        var fluidLoggable = FluidloggingRegistry.getBlockIFluidLoggable(block);
+        var fluidLoggable = FluidLoggingRegistry.getBlockIFluidLoggable(block);
         if (fluidLoggable == null || !fluidLoggable.canClearFluidLog(world, x, y, z, block, meta)) return null;
         return clearWorldFluid(world, x, y, z, true);
     }
@@ -269,16 +279,21 @@ public class FluidLoggingManagerImpl extends AbstractFluidLoggingManager {
     }
 
     @Override
-    public boolean canFluidLog(IBlockAccess blockAccess, int x, int y, int z, Fluid fluid) {
+    public boolean canLogFluid(IBlockAccess blockAccess, int x, int y, int z, Fluid fluid) {
         var world = getWorld(blockAccess);
         var block = world.getBlock(x, y, z);
         var meta = world.getBlockMetadata(x, y, z);
 
-        return FluidloggingRegistry.canFluidLog(world, x, y, z, block, meta, fluid);
+        return FluidLoggingRegistry.canFluidLog(world, x, y, z, block, meta, fluid);
     }
 
     @Override
-    public boolean canFluidLog(IBlockAccess blockAccess, int x, int y, int z, Block block, int meta, Fluid fluid) {
-        return FluidloggingRegistry.canFluidLog(getWorld(blockAccess), x, y, z, block, meta, fluid);
+    public boolean canLogFluid(IBlockAccess blockAccess, int x, int y, int z, Block block, int meta, Fluid fluid) {
+        return FluidLoggingRegistry.canFluidLog(getWorld(blockAccess), x, y, z, block, meta, fluid);
+    }
+
+    @Override
+    public boolean isFluidLoggable(Block block) {
+        return FluidLoggingRegistry.getBlockIFluidLoggable(block) != null;
     }
 }

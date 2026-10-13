@@ -53,11 +53,16 @@ public abstract class AbstractFluidLoggingManager {
     /**
      * @return true if the block at this position can contain this fluid.
      */
-    public abstract boolean canFluidLog(IBlockAccess world, int x, int y, int z, Fluid fluid);
+    public abstract boolean canLogFluid(IBlockAccess world, int x, int y, int z, Fluid fluid);
 
     /**
      * @return true if the block with meta can contain this fluid at the given position.
      */
-    public abstract boolean canFluidLog(IBlockAccess world, int x, int y, int z, Block block, int meta, Fluid fluid);
+    public abstract boolean canLogFluid(IBlockAccess world, int x, int y, int z, Block block, int meta, Fluid fluid);
+
+    /**
+     * @return true if the block have been registered as fluidloggable.
+     */
+    public abstract boolean isFluidLoggable(Block block);
 
 }

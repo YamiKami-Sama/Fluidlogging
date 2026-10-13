@@ -1,7 +1,9 @@
-package fluidlog.common.registry;
+package fluidlog.api.registry;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
@@ -9,13 +11,13 @@ import net.minecraftforge.fluids.Fluid;
 
 import fluidlog.api.IFluidLoggable;
 
-public class FluidloggingRegistry {
+public class FluidLoggingRegistry {
 
     public static final IFluidLoggable DEFAULT_LOGGABLE = new IFluidLoggable() {};
 
     private static final Map<Class<? extends Block>, IFluidLoggable> BLOCK_HANDLERS = new HashMap<>();
 
-    private FluidloggingRegistry() {}
+    private FluidLoggingRegistry() {}
 
     public static void register(Class<? extends Block> blockClass, IFluidLoggable handler) {
         BLOCK_HANDLERS.put(blockClass, handler);
@@ -29,10 +31,12 @@ public class FluidloggingRegistry {
         return handler.canFluidLog(world, x, y, z, block, meta, fluid);
     }
 
+    @Nullable
     public static IFluidLoggable getBlockIFluidLoggable(Block block) {
         return getLoggable(block);
     }
 
+    @Nullable
     private static IFluidLoggable getLoggable(Block block) {
         if (block == null) return null;
 

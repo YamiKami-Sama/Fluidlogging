@@ -2,7 +2,9 @@ package fluidlog.mixins.early;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDynamicLiquid;
+import net.minecraft.block.material.Material;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,7 +12,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+
+import fluidlog.FluidLoggingManagerImpl;
 import fluidlog.api.AbstractFluidLoggingManager;
+import fluidlog.api.registry.FluidLoggingRegistry;
 import fluidlog.common.FluidLoggingUtils;
 
 @Mixin(BlockDynamicLiquid.class)
@@ -71,6 +79,36 @@ public class MixinBlockDynamicLiquid {
         int flag) {
         if (AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z) != null) return false;
         return world.setBlock(x, y, z, block, meta, flag);
+    }
+
+    @Redirect(
+        method = "func_149807_p",
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/block/material/Material;blocksMovement()Z"))
+    private boolean fluidlogging$isBlockSolid(Material material, @Local(name = "block") Block block) {
+        if (FluidLoggingRegistry.getBlockIFluidLoggable(block) != null) return true;
+        return material.blocksMovement();
+    }
+
+    @WrapOperation(
+        method = "updateTick",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/block/BlockDynamicLiquid;func_149808_o(Lnet/minecraft/world/World;III)[Z"))
+    private boolean[] fluidlog$filterFlowDirections(BlockDynamicLiquid instance, World world, int x, int y, int z,
+        Operation<boolean[]> original) {
+        boolean[] directions = original.call(instance, world, x, y, z);
+
+        var block = world.getBlock(x, y, z);
+        if (AbstractFluidLoggingManager.INSTANCE.isFluidLoggable(block)) {
+            var fullFaces = FluidLoggingManagerImpl.getRestrictedFlowFaces(world, x, y, z);
+
+            if (fullFaces[ForgeDirection.WEST.ordinal()]) directions[0] = false;
+            if (fullFaces[ForgeDirection.EAST.ordinal()]) directions[1] = false;
+            if (fullFaces[ForgeDirection.NORTH.ordinal()]) directions[2] = false;
+            if (fullFaces[ForgeDirection.SOUTH.ordinal()]) directions[3] = false;
+        }
+
+        return directions;
     }
 
 }

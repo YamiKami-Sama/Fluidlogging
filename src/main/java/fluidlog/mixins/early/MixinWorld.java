@@ -70,7 +70,7 @@ public abstract class MixinWorld {
 
         // Fluid Source meta is 0
         if (fluid != null && oldBlockMeta.get() == 0
-            && AbstractFluidLoggingManager.INSTANCE.canFluidLog(world, x, y, z, currentBlock, blockMeta, fluid)) {
+            && AbstractFluidLoggingManager.INSTANCE.canLogFluid(world, x, y, z, currentBlock, blockMeta, fluid)) {
             AbstractFluidLoggingManager.INSTANCE.setFluid(world, x, y, z, fluid);
             return;
         }
@@ -82,7 +82,7 @@ public abstract class MixinWorld {
                 AbstractFluidLoggingManager.INSTANCE.clearFluidNoCheck(world, x, y, z);
                 // world.setBlock(x, y, z, fluidBlock, 0, flags);
             } else if (!AbstractFluidLoggingManager.INSTANCE
-                .canFluidLog(world, x, y, z, currentBlock, blockMeta, loggedFluidAtPos)) {
+                .canLogFluid(world, x, y, z, currentBlock, blockMeta, loggedFluidAtPos)) {
                     AbstractFluidLoggingManager.INSTANCE.clearFluidNoCheck(world, x, y, z);
                 }
         }

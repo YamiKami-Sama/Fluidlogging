@@ -5,7 +5,6 @@ import net.minecraft.block.BlockBrewingStand;
 import net.minecraft.block.BlockButton;
 import net.minecraft.block.BlockCarpet;
 import net.minecraft.block.BlockChest;
-import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockDragonEgg;
 import net.minecraft.block.BlockEnchantmentTable;
@@ -32,10 +31,10 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import fluidlog.api.registry.FluidLoggingRegistry;
 import fluidlog.common.command.FluidLoggingCommand;
 import fluidlog.common.event.FluidLoggingEventHandler;
 import fluidlog.common.network.FluidlogNetwork;
-import fluidlog.common.registry.FluidloggingRegistry;
 
 public class CommonProxy {
 
@@ -55,31 +54,30 @@ public class CommonProxy {
 
     // load "Do your mod setup. Build whatever data structures you care about. Register recipes." (Remove if not needed)
     public void init(FMLInitializationEvent event) {
-        FluidloggingRegistry.register(BlockAnvil.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockStainedGlassPane.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockDispenser.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockSkull.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockPane.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockBrewingStand.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockButton.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockCarpet.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockChest.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockDragonEgg.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockFence.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockFenceGate.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockHopper.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockDoor.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockEnchantmentTable.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockLadder.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockPistonMoving.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockRail.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockRailDetector.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockRailPowered.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockSign.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockSlab.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockStairs.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockTrapDoor.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
-        FluidloggingRegistry.register(BlockLeaves.class, FluidloggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockAnvil.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockStainedGlassPane.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockSkull.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockPane.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockBrewingStand.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockButton.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockCarpet.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockChest.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockDragonEgg.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockFence.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockFenceGate.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockHopper.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockDoor.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockEnchantmentTable.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockLadder.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockPistonMoving.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockRail.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockRailDetector.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockRailPowered.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockSign.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockSlab.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockStairs.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockTrapDoor.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
+        FluidLoggingRegistry.register(BlockLeaves.class, FluidLoggingRegistry.DEFAULT_LOGGABLE);
         // TODO conf ? maybe intermod commmunication
     }
 
