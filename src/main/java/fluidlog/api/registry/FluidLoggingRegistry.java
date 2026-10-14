@@ -23,6 +23,10 @@ public class FluidLoggingRegistry {
         BLOCK_HANDLERS.put(blockClass, handler);
     }
 
+    public static void register(Class<? extends Block> blockClass) {
+        BLOCK_HANDLERS.put(blockClass, DEFAULT_LOGGABLE);
+    }
+
     public static boolean canFluidLog(World world, int x, int y, int z, Block block, int meta, Fluid fluid) {
         if (block == null) return false;
         var handler = getLoggable(block);
