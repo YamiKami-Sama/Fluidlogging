@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 
+import fluidlog.Fluidlog;
 import fluidlog.api.IFluidLoggable;
 
 public class FluidLoggingRegistry {
@@ -20,11 +21,13 @@ public class FluidLoggingRegistry {
     private FluidLoggingRegistry() {}
 
     public static void register(Class<? extends Block> blockClass, IFluidLoggable handler) {
-        BLOCK_HANDLERS.put(blockClass, handler);
+        if (BLOCK_HANDLERS.containsKey(blockClass))
+            Fluidlog.LOGGER.warn("Registering an already registered fluid loggable block {}", blockClass);
+        BLOCK_HANDLERS.put(blockClass, handler == null ? DEFAULT_LOGGABLE : handler);
     }
 
     public static void register(Class<? extends Block> blockClass) {
-        BLOCK_HANDLERS.put(blockClass, DEFAULT_LOGGABLE);
+        register(blockClass, DEFAULT_LOGGABLE);
     }
 
     public static boolean canFluidLog(World world, int x, int y, int z, Block block, int meta, Fluid fluid) {
@@ -47,7 +50,11 @@ public class FluidLoggingRegistry {
         Class<?> current = block.getClass();
         while (current != null && Block.class.isAssignableFrom(current)) {
             var loggable = BLOCK_HANDLERS.get(current);
-            if (loggable != null) return loggable;
+            if (loggable != null) {
+                // to prevent next superclass checks
+                if (!current.equals(block.getClass())) BLOCK_HANDLERS.put((Class<? extends Block>) current, loggable);
+                return loggable;
+            }
             current = current.getSuperclass();
         }
 

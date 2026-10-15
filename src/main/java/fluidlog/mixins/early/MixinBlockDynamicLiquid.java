@@ -94,7 +94,7 @@ public class MixinBlockDynamicLiquid {
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/block/BlockDynamicLiquid;func_149808_o(Lnet/minecraft/world/World;III)[Z"))
-    private boolean[] fluidlog$filterFlowDirections(BlockDynamicLiquid instance, World world, int x, int y, int z,
+    private boolean[] fluidlog$filterFlowSides(BlockDynamicLiquid instance, World world, int x, int y, int z,
         Operation<boolean[]> original) {
         boolean[] directions = original.call(instance, world, x, y, z);
 
@@ -109,6 +109,75 @@ public class MixinBlockDynamicLiquid {
         }
 
         return directions;
+    }
+
+    @WrapOperation(
+        method = "updateTick",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/block/BlockDynamicLiquid;func_149809_q(Lnet/minecraft/world/World;III)Z",
+            remap = false))
+    private boolean fluidlog$filterFlowDown(BlockDynamicLiquid instance, World world, int x, int y, int z,
+        Operation<Boolean> original, @Local(name = "x") int originX, @Local(name = "y") int originY,
+        @Local(name = "z") int originZ) {
+
+        var sourceBlock = world.getBlock(originX, originY, originZ);
+        if (AbstractFluidLoggingManager.INSTANCE.isFluidLoggable(sourceBlock)) {
+            var offsetY = y - originY;
+
+            var fullFaces = FluidLoggingManagerImpl.getRestrictedFlowFaces(world, originX, originY, originZ);
+
+            if (offsetY < 0 && fullFaces[ForgeDirection.DOWN.ordinal()]) return false;
+        }
+
+        return original.call(instance, world, x, y, z);
+    }
+
+    @WrapOperation(
+        method = "updateTick",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/block/BlockDynamicLiquid;func_149810_a(Lnet/minecraft/world/World;IIII)I",
+            remap = false))
+    private int fluidlog$checkSourceBlockSides(BlockDynamicLiquid instance, World world, int x, int y, int z,
+        int touchingWaterSource, Operation<Integer> original, @Local(name = "x") int originX,
+        @Local(name = "z") int originZ) {
+
+        var targetBlock = world.getBlock(x, y, z);
+        if (AbstractFluidLoggingManager.INSTANCE.isFluidLoggable(targetBlock)) {
+            var offsetX = x - originX;
+            var offsetZ = z - originZ;
+
+            var fullFaces = FluidLoggingManagerImpl.getRestrictedFlowFaces(world, x, y, z);
+
+            if (offsetX > 0 && fullFaces[ForgeDirection.WEST.ordinal()]) return touchingWaterSource;
+            if (offsetX < 0 && fullFaces[ForgeDirection.EAST.ordinal()]) return touchingWaterSource;
+            if (offsetZ > 0 && fullFaces[ForgeDirection.NORTH.ordinal()]) return touchingWaterSource;
+            if (offsetZ < 0 && fullFaces[ForgeDirection.SOUTH.ordinal()]) return touchingWaterSource;
+        }
+
+        return original.call(instance, world, x, y, z, touchingWaterSource);
+    }
+
+    @WrapOperation(
+        method = "updateTick",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/block/BlockDynamicLiquid;func_149804_e(Lnet/minecraft/world/World;III)I",
+            remap = false))
+    private int fluidlog$checkSourceBlockUp(BlockDynamicLiquid instance, World world, int x, int y, int z,
+        Operation<Integer> original, @Local(name = "y") int originY) {
+
+        var sourceBlock = world.getBlock(x, y, z);
+        if (AbstractFluidLoggingManager.INSTANCE.isFluidLoggable(sourceBlock)) {
+            var offsetY = y - originY;
+
+            var fullFaces = FluidLoggingManagerImpl.getRestrictedFlowFaces(world, x, y, z);
+
+            if (offsetY > 0 && fullFaces[ForgeDirection.DOWN.ordinal()]) return -1;
+        }
+
+        return original.call(instance, world, x, y, z);
     }
 
 }

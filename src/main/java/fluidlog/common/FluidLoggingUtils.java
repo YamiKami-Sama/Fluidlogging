@@ -202,4 +202,26 @@ public class FluidLoggingUtils {
         return world.getBlockMetadata(x, y, z);
     }
 
+    public static int getLightValue(IBlockAccess world, int x, int y, int z, int blockLight) {
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
+        if (fluid == null || fluid.getBlock() == null) {
+            return blockLight;
+        }
+
+        var fluidLight = fluid.getBlock()
+            .getLightValue();
+        return Math.max(fluidLight, blockLight);
+    }
+
+    public static int getLightOpacity(IBlockAccess world, int x, int y, int z, int blockOpacity) {
+        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
+        if (fluid == null || fluid.getBlock() == null) {
+            return blockOpacity;
+        }
+
+        var fluidOpacity = fluid.getBlock()
+            .getLightOpacity();
+        return Math.max(fluidOpacity, blockOpacity);
+    }
+
 }

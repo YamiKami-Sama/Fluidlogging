@@ -228,15 +228,17 @@ public class FluidLoggingManagerImpl extends AbstractFluidLoggingManager {
             chunkFluidLoggingData.setFluid(x & 15, y, z & 15, fluid);
         }
 
+        var block = world.getBlock(x, y, z);
         if (!evaporateWater) world.markAndNotifyBlock(
             x,
             y,
             z,
             world.getChunkFromBlockCoords(x, z),
-            oldFluid == null ? world.getBlock(x, y, z) : oldFluid.getBlock(),
+            oldFluid == null ? block : oldFluid.getBlock(),
             fluid.getBlock(),
             3);
 
+        world.markAndNotifyBlock(x, y, z, world.getChunkFromBlockCoords(x, z), block, block, 3);
         if (!world.isRemote && sendUpdate) FluidlogNetwork.sendFluidUpdate(world.provider.dimensionId, x, y, z, fluid);
 
         return true;
@@ -271,8 +273,8 @@ public class FluidLoggingManagerImpl extends AbstractFluidLoggingManager {
         if (!world.isRemote && fluid == null) return null;
         chunkFluidLoggingData.clearFluid(x & 15, y, z & 15);
         var worldBlock = world.getBlock(x, y, z);
+        world.markAndNotifyBlock(x, y, z, chunk, fluid == null ? worldBlock : fluid.getBlock(), worldBlock, 3);
         if (!world.isRemote) {
-            world.markAndNotifyBlock(x, y, z, chunk, fluid == null ? worldBlock : fluid.getBlock(), worldBlock, 3);
             if (sendUpdate) FluidlogNetwork.sendFluidUpdate(world.provider.dimensionId, x, y, z, null);
         }
         return fluid;

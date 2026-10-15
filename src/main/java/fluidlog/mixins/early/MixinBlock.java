@@ -22,18 +22,7 @@ public class MixinBlock {
         remap = false)
     public void fluidlogging$getLightValue(IBlockAccess world, int x, int y, int z,
         CallbackInfoReturnable<Integer> cir) {
-        int blockLight = cir.getReturnValueI();
-
-        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
-        if (fluid == null || fluid.getBlock() == null) {
-            return;
-        }
-
-        var fluidLight = fluid.getBlock()
-            .getLightValue();
-        if (fluidLight > blockLight) {
-            cir.setReturnValue(fluidLight);
-        }
+        cir.setReturnValue(FluidLoggingUtils.getLightValue(world, x, y, z, cir.getReturnValueI()));
     }
 
     @Inject(
@@ -43,18 +32,7 @@ public class MixinBlock {
         remap = false)
     public void fluidlogging$getLightOpacity(IBlockAccess world, int x, int y, int z,
         CallbackInfoReturnable<Integer> cir) {
-        int blockOpacity = cir.getReturnValueI();
-
-        var fluid = AbstractFluidLoggingManager.INSTANCE.getFluid(world, x, y, z);
-        if (fluid == null || fluid.getBlock() == null) {
-            return;
-        }
-
-        var fluidOpacity = fluid.getBlock()
-            .getLightOpacity();
-        if (fluidOpacity > blockOpacity) {
-            cir.setReturnValue(fluidOpacity);
-        }
+        cir.setReturnValue(FluidLoggingUtils.getLightOpacity(world, x, y, z, cir.getReturnValueI()));
     }
 
     @Redirect(

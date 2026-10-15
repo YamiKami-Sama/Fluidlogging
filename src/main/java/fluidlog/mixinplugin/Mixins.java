@@ -15,6 +15,8 @@ public enum Mixins implements IMixins {
         .addClientMixins("MixinRenderBlockFluid")),
     BLOCK(new MixinBuilder().setPhase(Phase.EARLY)
         .addCommonMixins("MixinBlock")),
+    BLOCK_DOOR(new MixinBuilder().setPhase(Phase.EARLY)
+        .addCommonMixins("MixinBlockDoor")),
     BLOCK_DYNAMIC_LIQUID(new MixinBuilder().setPhase(Phase.EARLY)
         .addCommonMixins("MixinBlockDynamicLiquid")),
     BLOCK_LIQUID(new MixinBuilder().setPhase(Phase.EARLY)
@@ -28,6 +30,8 @@ public enum Mixins implements IMixins {
     BLOCK_SPONGE_EFR(new MixinBuilder().setPhase(Phase.EARLY)
         .addCommonMixins("compat.efr.MixinBlockSponge")
         .addRequiredMod(TargetMods.ET_FUTURUM)),
+    BLOCK_TRAP_DOOR(new MixinBuilder().setPhase(Phase.EARLY)
+        .addCommonMixins("MixinBlockTrapDoor")),
     BLOCK_FARMLAND(new MixinBuilder().setPhase(Phase.EARLY)
         .addCommonMixins("MixinBlockFarmland")),
     BLOCK_FIRE(new MixinBuilder().setPhase(Phase.EARLY)
