@@ -10,6 +10,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import fluidlog.FluidLoggingManagerImpl;
 import fluidlog.api.AbstractFluidLoggingManager;
 
 public class FluidLoggingUtils {
@@ -222,6 +223,24 @@ public class FluidLoggingUtils {
         var fluidOpacity = fluid.getBlock()
             .getLightOpacity();
         return Math.max(fluidOpacity, blockOpacity);
+    }
+
+    public static boolean canFlowOut(World world, int x, int y, int z, int targetX, int targetY, int targetZ) {
+        if (AbstractFluidLoggingManager.INSTANCE.isFluidLogged(world, x, y, z)) {
+            var offsetX = targetX - x;
+            var offsetY = targetY - y;
+            var offsetZ = targetZ - z;
+
+            var fullFaces = FluidLoggingManagerImpl.getRestrictedFlowFaces(world, x, y, z);
+
+            if (offsetX > 0 && fullFaces[ForgeDirection.EAST.ordinal()]) return false;
+            if (offsetX < 0 && fullFaces[ForgeDirection.WEST.ordinal()]) return false;
+            if (offsetY > 0 && fullFaces[ForgeDirection.UP.ordinal()]) return false;
+            if (offsetY < 0 && fullFaces[ForgeDirection.DOWN.ordinal()]) return false;
+            if (offsetZ < 0 && fullFaces[ForgeDirection.NORTH.ordinal()]) return false;
+            return offsetZ <= 0 || !fullFaces[ForgeDirection.SOUTH.ordinal()];
+        }
+        return true;
     }
 
 }

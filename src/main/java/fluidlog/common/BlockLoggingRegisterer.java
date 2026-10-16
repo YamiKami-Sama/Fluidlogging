@@ -31,6 +31,11 @@ import buildcraft.transport.BlockGenericPipe;
 import codechicken.multipart.BlockMultipart;
 import codechicken.translocator.BlockTranslocator;
 import cpw.mods.fml.common.Loader;
+import crazypants.enderio.conduit.BlockConduitBundle;
+import crazypants.enderio.conduit.facade.BlockConduitFacade;
+import crazypants.enderio.item.skull.BlockEndermanSkull;
+import crazypants.enderio.machine.enchanter.BlockEnchanter;
+import crazypants.enderio.machine.obelisk.BlockObeliskAbstract;
 import fluidlog.api.IFluidLoggable;
 import fluidlog.api.registry.FluidLoggingRegistry;
 import ganymedes01.etfuturum.blocks.BlockBanner;
@@ -68,6 +73,10 @@ public class BlockLoggingRegisterer {
 
         if (Mods.CarpentersBlocks.isModLoaded()) {
             registerCarpentersBlocks();
+        }
+
+        if (Mods.EnderIO.isModLoaded()) {
+            registerEnderIO();
         }
 
         if (Mods.EtFuturumRequiem.isModLoaded()) {
@@ -155,6 +164,13 @@ public class BlockLoggingRegisterer {
         FluidLoggingRegistry.register(BlockCarpentersPressurePlate.class);
         FluidLoggingRegistry.register(BlockCarpentersSlope.class);
         FluidLoggingRegistry.register(BlockCarpentersStairs.class);
+    }
+
+    private static void registerEnderIO(){
+        FluidLoggingRegistry.register(BlockConduitBundle.class);
+        FluidLoggingRegistry.register(BlockEnchanter.class);
+        FluidLoggingRegistry.register(BlockEndermanSkull.class);
+        FluidLoggingRegistry.register(BlockObeliskAbstract.class);
     }
 
     private static void registerEtFuturum() {

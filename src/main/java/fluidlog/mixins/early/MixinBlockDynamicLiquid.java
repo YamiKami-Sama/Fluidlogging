@@ -140,7 +140,7 @@ public class MixinBlockDynamicLiquid {
             target = "Lnet/minecraft/block/BlockDynamicLiquid;func_149810_a(Lnet/minecraft/world/World;IIII)I",
             remap = false))
     private int fluidlog$checkSourceBlockSides(BlockDynamicLiquid instance, World world, int x, int y, int z,
-        int touchingWaterSource, Operation<Integer> original, @Local(name = "x") int originX,
+        int previousTouchingSource, Operation<Integer> original, @Local(name = "x") int originX,
         @Local(name = "z") int originZ) {
 
         var targetBlock = world.getBlock(x, y, z);
@@ -150,13 +150,13 @@ public class MixinBlockDynamicLiquid {
 
             var fullFaces = FluidLoggingManagerImpl.getRestrictedFlowFaces(world, x, y, z);
 
-            if (offsetX > 0 && fullFaces[ForgeDirection.WEST.ordinal()]) return touchingWaterSource;
-            if (offsetX < 0 && fullFaces[ForgeDirection.EAST.ordinal()]) return touchingWaterSource;
-            if (offsetZ > 0 && fullFaces[ForgeDirection.NORTH.ordinal()]) return touchingWaterSource;
-            if (offsetZ < 0 && fullFaces[ForgeDirection.SOUTH.ordinal()]) return touchingWaterSource;
+            if (offsetX > 0 && fullFaces[ForgeDirection.WEST.ordinal()]) return previousTouchingSource;
+            if (offsetX < 0 && fullFaces[ForgeDirection.EAST.ordinal()]) return previousTouchingSource;
+            if (offsetZ > 0 && fullFaces[ForgeDirection.NORTH.ordinal()]) return previousTouchingSource;
+            if (offsetZ < 0 && fullFaces[ForgeDirection.SOUTH.ordinal()]) return previousTouchingSource;
         }
 
-        return original.call(instance, world, x, y, z, touchingWaterSource);
+        return original.call(instance, world, x, y, z, previousTouchingSource);
     }
 
     @WrapOperation(
