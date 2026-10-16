@@ -125,9 +125,8 @@ public class MixinBlockDynamicLiquid {
         if (AbstractFluidLoggingManager.INSTANCE.isFluidLoggable(sourceBlock)) {
             var offsetY = y - originY;
 
-            var fullFaces = FluidLoggingManagerImpl.getRestrictedFlowFaces(world, originX, originY, originZ);
-
-            if (offsetY < 0 && fullFaces[ForgeDirection.DOWN.ordinal()]) return false;
+            if (offsetY < 0 && FluidLoggingManagerImpl
+                .getRestrictedFlowFace(world, originX, originY, originZ, ForgeDirection.DOWN.ordinal())) return false;
         }
 
         return original.call(instance, world, x, y, z);
@@ -171,10 +170,9 @@ public class MixinBlockDynamicLiquid {
         var sourceBlock = world.getBlock(x, y, z);
         if (AbstractFluidLoggingManager.INSTANCE.isFluidLoggable(sourceBlock)) {
             var offsetY = y - originY;
-
-            var fullFaces = FluidLoggingManagerImpl.getRestrictedFlowFaces(world, x, y, z);
-
-            if (offsetY > 0 && fullFaces[ForgeDirection.DOWN.ordinal()]) return -1;
+            if (offsetY > 0
+                && FluidLoggingManagerImpl.getRestrictedFlowFace(world, x, y, z, ForgeDirection.DOWN.ordinal()))
+                return -1;
         }
 
         return original.call(instance, world, x, y, z);

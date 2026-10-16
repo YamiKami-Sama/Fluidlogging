@@ -7,6 +7,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import fluidlog.api.AbstractFluidLoggingManager;
 import fluidlog.common.BlockLoggingRegisterer;
 import fluidlog.common.command.FluidLoggingCommand;
 import fluidlog.common.event.FluidLoggingEventHandler;
@@ -20,6 +21,7 @@ public class CommonProxy {
     // GameRegistry." (Remove if not needed)
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
+        AbstractFluidLoggingManager.INSTANCE = new FluidLoggingManagerImpl();
         FluidlogNetwork.init();
         EVENT_HANDLER = new FluidLoggingEventHandler();
         MinecraftForge.EVENT_BUS.register(EVENT_HANDLER);

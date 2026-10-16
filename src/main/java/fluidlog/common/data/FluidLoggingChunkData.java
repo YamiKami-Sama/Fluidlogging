@@ -8,8 +8,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import fluidlog.Fluidlog;
 
 public class FluidLoggingChunkData {
@@ -26,7 +24,6 @@ public class FluidLoggingChunkData {
         return fluids.isEmpty();
     }
 
-    @SideOnly(Side.CLIENT)
     public Map<Integer, Fluid> getFluids() {
         return fluids;
     }

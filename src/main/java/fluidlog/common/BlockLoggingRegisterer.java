@@ -1,7 +1,35 @@
 package fluidlog.common;
 
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockAnvil;
+import net.minecraft.block.BlockBasePressurePlate;
+import net.minecraft.block.BlockBrewingStand;
+import net.minecraft.block.BlockButton;
+import net.minecraft.block.BlockCarpet;
+import net.minecraft.block.BlockChest;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.BlockDragonEgg;
+import net.minecraft.block.BlockEnchantmentTable;
+import net.minecraft.block.BlockFence;
+import net.minecraft.block.BlockFenceGate;
+import net.minecraft.block.BlockLadder;
+import net.minecraft.block.BlockLeaves;
+import net.minecraft.block.BlockLever;
+import net.minecraft.block.BlockPane;
+import net.minecraft.block.BlockPistonMoving;
+import net.minecraft.block.BlockRail;
+import net.minecraft.block.BlockRailDetector;
+import net.minecraft.block.BlockRailPowered;
+import net.minecraft.block.BlockReed;
+import net.minecraft.block.BlockSign;
+import net.minecraft.block.BlockSkull;
+import net.minecraft.block.BlockSlab;
+import net.minecraft.block.BlockStainedGlassPane;
+import net.minecraft.block.BlockStairs;
+import net.minecraft.block.BlockTrapDoor;
+import net.minecraft.block.BlockWall;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 
 import com.carpentersblocks.block.BlockCarpentersBarrier;
@@ -29,13 +57,14 @@ import appeng.block.qnb.BlockQuantumBase;
 import appeng.block.storage.BlockSkyChest;
 import buildcraft.transport.BlockGenericPipe;
 import codechicken.multipart.BlockMultipart;
+import codechicken.multipart.TileMultipart;
 import codechicken.translocator.BlockTranslocator;
 import cpw.mods.fml.common.Loader;
 import crazypants.enderio.conduit.BlockConduitBundle;
-import crazypants.enderio.conduit.facade.BlockConduitFacade;
 import crazypants.enderio.item.skull.BlockEndermanSkull;
 import crazypants.enderio.machine.enchanter.BlockEnchanter;
 import crazypants.enderio.machine.obelisk.BlockObeliskAbstract;
+import fluidlog.api.IBlockFlow;
 import fluidlog.api.IFluidLoggable;
 import fluidlog.api.registry.FluidLoggingRegistry;
 import ganymedes01.etfuturum.blocks.BlockBanner;
@@ -68,7 +97,7 @@ public class BlockLoggingRegisterer {
         }
 
         if (Mods.BuildCraftTransport.isModLoaded()) {
-            FluidLoggingRegistry.register(BlockGenericPipe.class);
+            FluidLoggingRegistry.registerFluidLoggableBlock(BlockGenericPipe.class);
         }
 
         if (Mods.CarpentersBlocks.isModLoaded()) {
@@ -83,6 +112,10 @@ public class BlockLoggingRegisterer {
             registerEtFuturum();
         }
 
+        if (Mods.ForgeMicroblocks.isModLoaded()) {
+            registerForgeMicroblocks();
+        }
+
         if (Loader.isModLoaded("gregtech")) {
             registerGregTech();
         }
@@ -92,98 +125,127 @@ public class BlockLoggingRegisterer {
         }
 
         if (Mods.LogisticsPipes.isModLoaded()) {
-            FluidLoggingRegistry.register(LogisticsBlockGenericPipe.class);
+            FluidLoggingRegistry.registerFluidLoggableBlock(LogisticsBlockGenericPipe.class);
         }
 
         if (Mods.Translocator.isModLoaded()) {
-            FluidLoggingRegistry.register(BlockTranslocator.class);
-        }
-
-        if (Mods.WirelessRedstoneCBELogic.isModLoaded()) {
-            FluidLoggingRegistry.register(BlockMultipart.class);
+            FluidLoggingRegistry.registerFluidLoggableBlock(BlockTranslocator.class);
         }
     }
 
     private static void registerVanillaBlocks() {
-        FluidLoggingRegistry.register(BlockAnvil.class);
-        FluidLoggingRegistry.register(BlockStainedGlassPane.class);
-        FluidLoggingRegistry.register(BlockSkull.class);
-        FluidLoggingRegistry.register(BlockPane.class);
-        FluidLoggingRegistry.register(BlockBrewingStand.class);
-        FluidLoggingRegistry.register(BlockButton.class);
-        FluidLoggingRegistry.register(BlockCarpet.class);
-        FluidLoggingRegistry.register(BlockChest.class);
-        FluidLoggingRegistry.register(BlockDragonEgg.class);
-        FluidLoggingRegistry.register(BlockFence.class);
-        FluidLoggingRegistry.register(BlockFenceGate.class);
-        FluidLoggingRegistry.register(BlockDoor.class);
-        FluidLoggingRegistry.register(BlockEnchantmentTable.class);
-        FluidLoggingRegistry.register(BlockLadder.class);
-        FluidLoggingRegistry.register(BlockLever.class);
-        FluidLoggingRegistry.register(BlockPistonMoving.class);
-        FluidLoggingRegistry.register(BlockBasePressurePlate.class);
-        FluidLoggingRegistry.register(BlockRail.class);
-        FluidLoggingRegistry.register(BlockRailDetector.class);
-        FluidLoggingRegistry.register(BlockRailPowered.class);
-        FluidLoggingRegistry.register(BlockReed.class);
-        FluidLoggingRegistry.register(BlockSign.class);
-        FluidLoggingRegistry.register(BlockSlab.class);
-        FluidLoggingRegistry.register(BlockStairs.class);
-        FluidLoggingRegistry.register(BlockTrapDoor.class);
-        FluidLoggingRegistry.register(BlockLeaves.class);
-        FluidLoggingRegistry.register(BlockWall.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockAnvil.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockStainedGlassPane.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockSkull.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockPane.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockBrewingStand.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockButton.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCarpet.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockChest.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockDragonEgg.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockFence.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockFenceGate.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockDoor.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockEnchantmentTable.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockLadder.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockLever.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockPistonMoving.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockBasePressurePlate.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockRail.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockRailDetector.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockRailPowered.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockReed.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockSign.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockSlab.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockStairs.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockTrapDoor.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockLeaves.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockWall.class);
     }
 
     private static void registerAppliedEnergistics2() {
-        FluidLoggingRegistry.register(BlockCableBus.class);
-        FluidLoggingRegistry.register(BlockCrank.class);
-        FluidLoggingRegistry.register(BlockCharger.class);
-        FluidLoggingRegistry.register(appeng.block.storage.BlockChest.class);
-        FluidLoggingRegistry.register(BlockLightDetector.class);
-        FluidLoggingRegistry.register(BlockQuantumBase.class);
-        FluidLoggingRegistry.register(BlockQuartzTorch.class);
-        FluidLoggingRegistry.register(BlockSkyChest.class);
-        FluidLoggingRegistry.register(BlockSkyCompass.class);
-        FluidLoggingRegistry.register(BlockTinyTNT.class);
-        FluidLoggingRegistry.register(BlockWireless.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCableBus.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCrank.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCharger.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(appeng.block.storage.BlockChest.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockLightDetector.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockQuantumBase.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockQuartzTorch.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockSkyChest.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockSkyCompass.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockTinyTNT.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockWireless.class);
     }
 
     private static void registerAE2FluidCrafting() {
-        FluidLoggingRegistry.register(BlockWalrus.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockWalrus.class);
     }
 
     private static void registerCarpentersBlocks() {
-        FluidLoggingRegistry.register(BlockCarpentersBarrier.class);
-        FluidLoggingRegistry.register(BlockCarpentersButton.class);
-        FluidLoggingRegistry.register(BlockCarpentersDoor.class);
-        FluidLoggingRegistry.register(BlockCarpentersFlowerPot.class);
-        FluidLoggingRegistry.register(BlockCarpentersGarageDoor.class);
-        FluidLoggingRegistry.register(BlockCarpentersGate.class);
-        FluidLoggingRegistry.register(BlockCarpentersHatch.class);
-        FluidLoggingRegistry.register(BlockCarpentersLadder.class);
-        FluidLoggingRegistry.register(BlockCarpentersPressurePlate.class);
-        FluidLoggingRegistry.register(BlockCarpentersSlope.class);
-        FluidLoggingRegistry.register(BlockCarpentersStairs.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCarpentersBarrier.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCarpentersButton.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCarpentersDoor.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCarpentersFlowerPot.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCarpentersGarageDoor.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCarpentersGate.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCarpentersHatch.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCarpentersLadder.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCarpentersPressurePlate.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCarpentersSlope.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCarpentersStairs.class);
     }
 
-    private static void registerEnderIO(){
-        FluidLoggingRegistry.register(BlockConduitBundle.class);
-        FluidLoggingRegistry.register(BlockEnchanter.class);
-        FluidLoggingRegistry.register(BlockEndermanSkull.class);
-        FluidLoggingRegistry.register(BlockObeliskAbstract.class);
+    private static void registerEnderIO() {
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockConduitBundle.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockEnchanter.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockEndermanSkull.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockObeliskAbstract.class);
     }
 
     private static void registerEtFuturum() {
-        FluidLoggingRegistry.register(BlockBanner.class);
-        FluidLoggingRegistry.register(BlockChain.class);
-        FluidLoggingRegistry.register(BlockCopperGrate.class);
-        FluidLoggingRegistry.register(BlockLantern.class);
-        FluidLoggingRegistry.register(BlockStonecutter.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockBanner.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockChain.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCopperGrate.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockLantern.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockStonecutter.class);
+    }
+
+    private static void registerForgeMicroblocks() {
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockMultipart.class);
+        FluidLoggingRegistry.registerCustomBlockFlow(BlockMultipart.class, new IBlockFlow() {
+
+            @Override
+            public boolean isControlledByTile() {
+                return true;
+            }
+
+            public boolean isFlowRestrictedOnSide(World world, int x, int y, int z, ForgeDirection side) {
+                if (world.getTileEntity(x, y, z) instanceof TileMultipart multipart) {
+                    return multipart.isSolid(side.ordinal());
+                }
+                return false;
+            }
+
+            @Override
+            public boolean[] getSidesFlowRestricted(World world, int x, int y, int z) {
+                var restrictedFlow = new boolean[] { false, false, false, false, false, false };
+                var tile = world.getTileEntity(x, y, z);
+                if (tile instanceof TileMultipart multipart) {
+                    if (multipart.isSolid(ForgeDirection.DOWN.ordinal())) restrictedFlow[0] = true;
+                    if (multipart.isSolid(ForgeDirection.UP.ordinal())) restrictedFlow[1] = true;
+                    if (multipart.isSolid(ForgeDirection.NORTH.ordinal())) restrictedFlow[2] = true;
+                    if (multipart.isSolid(ForgeDirection.SOUTH.ordinal())) restrictedFlow[3] = true;
+                    if (multipart.isSolid(ForgeDirection.WEST.ordinal())) restrictedFlow[4] = true;
+                    if (multipart.isSolid(ForgeDirection.EAST.ordinal())) restrictedFlow[5] = true;
+                }
+                return restrictedFlow;
+            }
+        });
     }
 
     public static void registerGregTech() {
-        FluidLoggingRegistry.register(BlockFrameBox.class);
-        FluidLoggingRegistry.register(BlockMachines.class, new IFluidLoggable() {
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockFrameBox.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockMachines.class, new IFluidLoggable() {
 
             @Override
             public boolean canFluidLog(World world, int x, int y, int z, Block block, int meta, Fluid fluid) {
@@ -200,11 +262,11 @@ public class BlockLoggingRegisterer {
     }
 
     public static void registerIndustrialCraft2() {
-        FluidLoggingRegistry.register(BlockPoleFence.class);
-        FluidLoggingRegistry.register(BlockScaffold.class);
-        FluidLoggingRegistry.register(BlockRubberSheet.class);
-        FluidLoggingRegistry.register(BlockLuminator.class);
-        FluidLoggingRegistry.register(BlockCable.class, new IFluidLoggable() {
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockPoleFence.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockScaffold.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockRubberSheet.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockLuminator.class);
+        FluidLoggingRegistry.registerFluidLoggableBlock(BlockCable.class, new IFluidLoggable() {
 
             @Override
             public boolean canFluidLog(World world, int x, int y, int z, Block block, int meta, Fluid fluid) {

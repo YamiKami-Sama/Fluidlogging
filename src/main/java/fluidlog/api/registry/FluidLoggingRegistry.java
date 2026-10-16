@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 
 import fluidlog.Fluidlog;
+import fluidlog.api.IBlockFlow;
 import fluidlog.api.IFluidLoggable;
 
 public class FluidLoggingRegistry {
@@ -18,16 +19,42 @@ public class FluidLoggingRegistry {
 
     private static final Map<Class<? extends Block>, IFluidLoggable> BLOCK_HANDLERS = new HashMap<>();
 
+    private static final Map<Class<? extends Block>, IBlockFlow> CUSTOM_FLOW_HANDLERS = new HashMap<>();
+
     private FluidLoggingRegistry() {}
 
-    public static void register(Class<? extends Block> blockClass, IFluidLoggable handler) {
+    /**
+     * Register a block to be fluid loggable with a custom handler
+     *
+     * @param blockClass
+     * @param handler
+     */
+    public static void registerFluidLoggableBlock(Class<? extends Block> blockClass, IFluidLoggable handler) {
         if (BLOCK_HANDLERS.containsKey(blockClass))
             Fluidlog.LOGGER.warn("Registering an already registered fluid loggable block {}", blockClass);
         BLOCK_HANDLERS.put(blockClass, handler == null ? DEFAULT_LOGGABLE : handler);
     }
 
-    public static void register(Class<? extends Block> blockClass) {
-        register(blockClass, DEFAULT_LOGGABLE);
+    /**
+     * Register a block to be fluid loggable
+     *
+     * @param blockClass
+     */
+    public static void registerFluidLoggableBlock(Class<? extends Block> blockClass) {
+        registerFluidLoggableBlock(blockClass, DEFAULT_LOGGABLE);
+    }
+
+    /**
+     * Register a custom block flow mechanic for the fluid logged block,
+     * If the block is full bound but must
+     *
+     * @param blockClass
+     * @param flowController
+     */
+    public static void registerCustomBlockFlow(Class<? extends Block> blockClass, IBlockFlow flowController) {
+        if (CUSTOM_FLOW_HANDLERS.containsKey(blockClass))
+            Fluidlog.LOGGER.warn("Registering an already registered custom block flow {}", blockClass);
+        CUSTOM_FLOW_HANDLERS.put(blockClass, flowController);
     }
 
     public static boolean canFluidLog(World world, int x, int y, int z, Block block, int meta, Fluid fluid) {
@@ -59,6 +86,11 @@ public class FluidLoggingRegistry {
         }
 
         return null;
+    }
+
+    @Nullable
+    public static IBlockFlow getCustomBlockFlow(Block block) {
+        return CUSTOM_FLOW_HANDLERS.get(block.getClass());
     }
 
 }

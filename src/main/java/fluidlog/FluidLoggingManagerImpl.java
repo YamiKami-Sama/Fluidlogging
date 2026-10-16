@@ -28,17 +28,44 @@ public class FluidLoggingManagerImpl extends AbstractFluidLoggingManager {
     private static final Map<Integer, Map<Integer, FluidLoggingChunkData>> CHUNKS_DATA = new HashMap<>();
     private static final Map<Integer, Map<Integer, FluidLoggingChunkData>> CLIENT_CHUNKS_DATA = new HashMap<>();
 
-    static {
-        AbstractFluidLoggingManager.INSTANCE = new FluidLoggingManagerImpl();
-    }
-
     private static final Map<Class<? extends Block>, Map<Integer, boolean[]>> BLOCK_RESTRICTED_FACES = new HashMap<>();
 
     public static boolean[] getRestrictedFlowFaces(World world, int x, int y, int z) {
         var block = world.getBlock(x, y, z);
-        var meta = world.getBlockMetadata(x, y, z);
-        return BLOCK_RESTRICTED_FACES.computeIfAbsent(block.getClass(), (b) -> new HashMap<>())
-            .computeIfAbsent(meta, (m) -> FluidLoggingUtils.computeBlockRestrictiveFlowFace(block, world, x, y, z));
+        var blockFlow = FluidLoggingRegistry.getCustomBlockFlow(block);
+        if (blockFlow != null) {
+            if (blockFlow.isControlledByTile()) {
+                return blockFlow.getSidesFlowRestricted(world, x, y, z);
+            } else {
+                var meta = world.getBlockMetadata(x, y, z);
+                return BLOCK_RESTRICTED_FACES.computeIfAbsent(block.getClass(), (b) -> new HashMap<>())
+                    .computeIfAbsent(meta, (m) -> blockFlow.getSidesFlowRestricted(world, x, y, z));
+            }
+        } else {
+            var meta = world.getBlockMetadata(x, y, z);
+            return BLOCK_RESTRICTED_FACES.computeIfAbsent(block.getClass(), (b) -> new HashMap<>())
+                .computeIfAbsent(meta, (m) -> FluidLoggingUtils.computeBlockRestrictiveFlowFace(block, world, x, y, z));
+        }
+    }
+
+    public static boolean getRestrictedFlowFace(World world, int x, int y, int z, int side) {
+        var block = world.getBlock(x, y, z);
+        var blockFlow = FluidLoggingRegistry.getCustomBlockFlow(block);
+        if (blockFlow != null) {
+            if (blockFlow.isControlledByTile()) {
+                return blockFlow.isFlowRestrictedOnSide(world, x, y, z, side);
+            } else {
+                var meta = world.getBlockMetadata(x, y, z);
+                return BLOCK_RESTRICTED_FACES.computeIfAbsent(block.getClass(), (b) -> new HashMap<>())
+                    .computeIfAbsent(meta, (m) -> blockFlow.getSidesFlowRestricted(world, x, y, z))[side];
+            }
+        } else {
+            var meta = world.getBlockMetadata(x, y, z);
+            return BLOCK_RESTRICTED_FACES.computeIfAbsent(block.getClass(), (b) -> new HashMap<>())
+                .computeIfAbsent(
+                    meta,
+                    (m) -> FluidLoggingUtils.computeBlockRestrictiveFlowFace(block, world, x, y, z))[side];
+        }
     }
 
     @Nonnull
